@@ -340,5 +340,3 @@ If you have any questions or issues, please open an issue on GitHub.
 ---
 
 **Made with ❤️ for the ESP32 community**
-```
-
