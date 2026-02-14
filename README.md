@@ -13,7 +13,7 @@
 - 🚀 **Fast & Lightweight** - Direct register access for GPIO operations
 - 🎯 **Modern C++** - Clean API with type safety
 - 🔧 **Modular Design** - Include only what you need
-- 📦 **Rich Peripherals** - Digital I/O, ADC, PWM, UART, I2C, Timers
+- 📦 **Rich Peripherals** - Digital I/O, ADC, PWM, UART, Timers
 - 🎮 **Easy to Use** - Arduino-style simplicity with ESP-IDF power
 - 🔄 **FreeRTOS Support** - Built-in multitasking capabilities
 - 📚 **Well Documented** - 25+ examples included
@@ -159,17 +159,6 @@ void onData(const char* data) {
 uart.begin(115200, onData);
 ```
 
-### I2C
-```cpp
-#include <ArduLiteESP_I2C.h>
-
-i2c0.begin();
-i2c0.scan();
-i2c0.writeByte(0x27, 0x00, 0xFF);
-uint8_t data;
-i2c0.readByte(0x27, 0x00, &data);
-```
-
 ### Task (Multitasking)
 ```cpp
 void task1() {
@@ -294,8 +283,6 @@ The library includes **25+ examples** organized by category:
 | UART0 | TX:1, RX:3 (default) |
 | UART1 | TX:10, RX:9 (default) |
 | UART2 | TX:17, RX:16 (default) |
-| I2C0 | SDA:21, SCL:22 (default) |
-| I2C1 | SDA:33, SCL:32 (default) |
 
 ---
 
@@ -340,3 +327,4 @@ If you have any questions or issues, please open an issue on GitHub.
 ---
 
 **Made with ❤️ for the ESP32 community**
+
