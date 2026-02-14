@@ -30,7 +30,7 @@
 ### PlatformIO
 ```ini
 lib_deps = 
-    https://github.com/yourusername/ArduLiteESP
+    https://github.com/ArduLite/ArduLiteESP
 ```
 
 ---
@@ -321,7 +321,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Ajang Rahmat**
 - Email: ajangrahmat@gmail.com
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@ArduLite](https://github.com/ArduLite)
 
 ---
 
@@ -341,3 +341,4 @@ If you have any questions or issues, please open an issue on GitHub.
 
 **Made with ❤️ for the ESP32 community**
 ```
+
