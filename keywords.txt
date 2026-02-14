@@ -1,0 +1,137 @@
+#######################################
+# Syntax Coloring Map for ArduLiteESP
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ArduLiteESP	KEYWORD1
+Digital	KEYWORD1
+Analog	KEYWORD1
+PWM	KEYWORD1
+Button	KEYWORD1
+LED	KEYWORD1
+Timer	KEYWORD1
+Tone	KEYWORD1
+Pulse	KEYWORD1
+UART	KEYWORD1
+Task	KEYWORD1
+I2C	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+# Digital
+on	KEYWORD2
+off	KEYWORD2
+toggle	KEYWORD2
+read	KEYWORD2
+write	KEYWORD2
+pulse	KEYWORD2
+
+# Analog
+readVoltage	KEYWORD2
+readAverage	KEYWORD2
+readMedian	KEYWORD2
+readSmooth	KEYWORD2
+readVoltageAverage	KEYWORD2
+readVoltageMedian	KEYWORD2
+readVoltageSmooth	KEYWORD2
+setSamples	KEYWORD2
+setSmoothFactor	KEYWORD2
+resetSmooth	KEYWORD2
+
+# PWM
+writePercent	KEYWORD2
+writeFloat	KEYWORD2
+fadeTo	KEYWORD2
+fadeToPercent	KEYWORD2
+setFrequency	KEYWORD2
+stop	KEYWORD2
+getMaxDuty	KEYWORD2
+getResolution	KEYWORD2
+getFrequency	KEYWORD2
+
+# Button
+update	KEYWORD2
+pressed	KEYWORD2
+released	KEYWORD2
+held	KEYWORD2
+pressDuration	KEYWORD2
+
+# LED
+blink	KEYWORD2
+stopBlink	KEYWORD2
+isBlinking	KEYWORD2
+
+# Timer
+start	KEYWORD2
+reset	KEYWORD2
+elapsed	KEYWORD2
+timeout	KEYWORD2
+isRunning	KEYWORD2
+
+# Tone
+play	KEYWORD2
+playNote	KEYWORD2
+
+# Pulse
+readLow	KEYWORD2
+setTimeout	KEYWORD2
+getTimeout	KEYWORD2
+
+# UART
+begin	KEYWORD2
+send	KEYWORD2
+sendLine	KEYWORD2
+available	KEYWORD2
+flush	KEYWORD2
+
+# I2C
+scan	KEYWORD2
+ping	KEYWORD2
+writeByte	KEYWORD2
+writeBytes	KEYWORD2
+readByte	KEYWORD2
+readBytes	KEYWORD2
+setBit	KEYWORD2
+clearBit	KEYWORD2
+getBit	KEYWORD2
+updateBits	KEYWORD2
+
+# Task
+create	KEYWORD2
+
+# Global Functions
+wait	KEYWORD2
+millis	KEYWORD2
+micros	KEYWORD2
+random	KEYWORD2
+randomSeed	KEYWORD2
+debug	KEYWORD2
+debugLine	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+uart	KEYWORD2
+uart1	KEYWORD2
+uart2	KEYWORD2
+i2c0	KEYWORD2
+i2c1	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+IN	LITERAL1
+OUT	LITERAL1
+IN_PULLUP	LITERAL1
+IN_PULLDOWN	LITERAL1
+INPUT	LITERAL1
+OUTPUT	LITERAL1
+INPUT_PULLUP	LITERAL1
+INPUT_PULLDOWN	LITERAL1
