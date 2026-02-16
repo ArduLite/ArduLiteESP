@@ -17,6 +17,37 @@ extern "C" {
 
 class UART {
 public:
+    // Configuration constants (no magic numbers)
+    inline static constexpr size_t BUFFER_SIZE = 64;
+    inline static constexpr size_t NUMERIC_BUF_SIZE = 34; // enough for 32-bit binary + terminator
+    inline static constexpr size_t FLOAT_BUF_SIZE = 16;
+    inline static constexpr size_t DTOSTRF_FMT_SIZE = 24;
+
+    inline static constexpr int UART_DRIVER_BUF_SIZE = 1024;
+    inline static constexpr int UART_RX_QUEUE_LENGTH = 10;
+    inline static constexpr int UART_RX_TASK_STACK = 2048;
+    inline static constexpr UBaseType_t UART_RX_TASK_PRIO = 5;
+    inline static constexpr int UART_RX_FLOW_CTRL_THRESH = 122;
+    inline static constexpr int UART_READ_NO_WAIT_MS = 0;
+
+    static inline int8_t default_tx_pin(uart_port_t port) {
+        switch (port) {
+            case UART_NUM_0: return 1;
+            case UART_NUM_1: return 10;
+            case UART_NUM_2: return 17;
+            default: return -1;
+        }
+    }
+
+    static inline int8_t default_rx_pin(uart_port_t port) {
+        switch (port) {
+            case UART_NUM_0: return 3;
+            case UART_NUM_1: return 9;
+            case UART_NUM_2: return 16;
+            default: return -1;
+        }
+    }
+
     explicit UART(uart_port_t port)
         : uart_num(port),
           data_callback(nullptr),
@@ -39,38 +70,30 @@ public:
 
         data_callback = callback;
 
-        if (uart_num == UART_NUM_0) {
-            if (tx_pin == -1) tx_pin = 1;
-            if (rx_pin == -1) rx_pin = 3;
-        } else if (uart_num == UART_NUM_1) {
-            if (tx_pin == -1) tx_pin = 10;
-            if (rx_pin == -1) rx_pin = 9;
-        } else if (uart_num == UART_NUM_2) {
-            if (tx_pin == -1) tx_pin = 17;
-            if (rx_pin == -1) rx_pin = 16;
-        }
+        if (tx_pin == -1) tx_pin = default_tx_pin(uart_num);
+        if (rx_pin == -1) rx_pin = default_rx_pin(uart_num);
 
-        uart_config_t uart_config = {
-            .baud_rate = (int)baud,
-            .data_bits = UART_DATA_8_BITS,
-            .parity = UART_PARITY_DISABLE,
-            .stop_bits = UART_STOP_BITS_1,
-            .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
-            .rx_flow_ctrl_thresh = 122,
-            .source_clk = UART_SCLK_APB,
-        };
+        uart_config_t uart_config = {};
+        uart_config.baud_rate = (int)baud;
+        uart_config.data_bits = UART_DATA_8_BITS;
+        uart_config.parity = UART_PARITY_DISABLE;
+        uart_config.stop_bits = UART_STOP_BITS_1;
+        uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+        uart_config.rx_flow_ctrl_thresh = UART_RX_FLOW_CTRL_THRESH;
+        uart_config.source_clk = UART_SCLK_APB;
 
         uart_param_config(uart_num, &uart_config);
         uart_set_pin(uart_num, tx_pin, rx_pin, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-        uart_driver_install(uart_num, 1024, 1024, 10, &rx_queue, 0);
+        uart_driver_install(uart_num, UART_DRIVER_BUF_SIZE, UART_DRIVER_BUF_SIZE,
+                    UART_RX_QUEUE_LENGTH, &rx_queue, 0);
 
         if (data_callback) {
             xTaskCreate(
                 rx_task_entry,
                 "uart_rx",
-                2048,
+                UART_RX_TASK_STACK,
                 this,
-                5,
+                UART_RX_TASK_PRIO,
                 &rx_task_handle
             );
         }
@@ -112,8 +135,39 @@ public:
         send((int32_t)data);
     }
 
+    // Send with base (HEX, BIN, OCT, DEC)
+    void send(uint32_t data, uint8_t base) {
+        char buf[NUMERIC_BUF_SIZE];
+        utoa(data, buf, base);
+        send(buf);
+    }
+
+    void send(uint16_t data, uint8_t base) {
+        send((uint32_t)data, base);
+    }
+
+    void send(uint8_t data, uint8_t base) {
+        send((uint32_t)data, base);
+    }
+
+    void send(int32_t data, uint8_t base) {
+        if (data < 0 && base == 10) {
+            send('-');
+            data = -data;
+        }
+        send((uint32_t)data, base);
+    }
+
+    void send(int16_t data, uint8_t base) {
+        send((int32_t)data, base);
+    }
+
+    void send(int8_t data, uint8_t base) {
+        send((int32_t)data, base);
+    }
+
     void send(float data, uint8_t decimals = 2) {
-        char buf[16];
+        char buf[FLOAT_BUF_SIZE];
         dtostrf(data, 1, decimals, buf);
         send(buf);
     }
@@ -166,6 +220,37 @@ public:
         send("\r\n");
     }
 
+    // SendLine with base (HEX, BIN, OCT, DEC)
+    void sendLine(uint32_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
+    void sendLine(uint16_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
+    void sendLine(uint8_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
+    void sendLine(int32_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
+    void sendLine(int16_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
+    void sendLine(int8_t data, uint8_t base) {
+        send(data, base);
+        send("\r\n");
+    }
+
     void sendLine(float data, uint8_t decimals = 2) {
         send(data, decimals);
         send("\r\n");
@@ -182,14 +267,15 @@ public:
     }
 
     int available() {
-        size_t available;
-        uart_get_buffered_data_len(uart_num, &available);
-        return available;
+        size_t available_len;
+        uart_get_buffered_data_len(uart_num, &available_len);
+        return (int)available_len;
     }
 
     int read() {
         uint8_t data;
-        int len = uart_read_bytes(uart_num, &data, 1, 0);
+        int len = uart_read_bytes(uart_num, &data, 1,
+                                  pdMS_TO_TICKS(UART_READ_NO_WAIT_MS));
         return (len > 0) ? data : -1;
     }
 
@@ -208,7 +294,7 @@ private:
     QueueHandle_t rx_queue;
     TaskHandle_t rx_task_handle;
 
-    char buffer[64];
+    char buffer[BUFFER_SIZE];
     uint8_t index;
 
     static void rx_task_entry(void *param) {
@@ -244,9 +330,9 @@ private:
     }
 
     static char* dtostrf(double val, signed char width, unsigned char prec, char *s) {
-        char fmt[20];
-        sprintf(fmt, "%%%d.%df", width, prec);
-        sprintf(s, fmt, val);
+        char fmt[DTOSTRF_FMT_SIZE];
+        snprintf(fmt, sizeof(fmt), "%%%d.%df", width, prec);
+        snprintf(s, FLOAT_BUF_SIZE, fmt, val);
         return s;
     }
 };
@@ -257,25 +343,41 @@ UART uart2(UART_NUM_2);
 
 // Debug Macros
 #ifdef DEBUG
-    #define debug(x) uart.send(x)
+    // Single parameter
+    template<typename T>
+    inline void debug(T data) {
+        uart.send(data);
+    }
 
+    // Two parameters (for base)
+    template<typename T>
+    inline void debug(T data, uint8_t param) {
+        uart.send(data, param);
+    }
+
+    // Single parameter
     template<typename T>
     inline void debugLine(T data) {
         uart.sendLine(data);
     }
 
+    // Two parameters (for decimals/base)
     template<typename T>
-    inline void debugLine(T data, uint8_t decimals) {
-        uart.sendLine(data, decimals);
+    inline void debugLine(T data, uint8_t param) {
+        uart.sendLine(data, param);
     }
 #else
-    #define debug(x)
+    template<typename T>
+    inline void debug(T data) {}
+
+    template<typename T>
+    inline void debug(T data, uint8_t param) {}
 
     template<typename T>
     inline void debugLine(T data) {}
 
     template<typename T>
-    inline void debugLine(T data, uint8_t decimals) {}
+    inline void debugLine(T data, uint8_t param) {}
 #endif
 
 #endif
